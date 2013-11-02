@@ -255,13 +255,18 @@ function state:draw()
 			end
 		end
 		for i,v in ipairs(lights) do
-			love.graphics.print(v,200+i*30,200)
+			love.graphics.print(v,260+i*30,200)
 		end
 		love.graphics.setColor(255,255,255)
 		--love.graphics.print(goodness,230,175)
 		--love.graphics.print(lastrel,230,235)
 		useful.drawTime(countdown)
 	--end
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(wireim)
+	if vib>0 then
+		love.graphics.draw(useful.tri(math.floor(time*10)%2==0,skul1,skul2),512-skul1:getWidth()*(3/2),300-skul2:getHeight()*(3/2),0,3,3)
+	end
 	love.graphics.setCanvas()
 
 	love.graphics.setColor(10,25,30)

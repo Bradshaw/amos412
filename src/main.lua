@@ -18,6 +18,8 @@ function love.load(arg)
 	skul1 = love.graphics.newImage("images/Gameover_Skull1.png")
 	skul2 = love.graphics.newImage("images/Gameover_Skull2.png")
 
+	wireim = love.graphics.newImage("images/window_code.png")
+
 	music = {}
 	for i=1,5 do
 		music[i] = love.audio.newSource("audio/prep_Track 0"..i..".ogg")
