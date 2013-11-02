@@ -1,6 +1,11 @@
 function love.load(arg)
+	math.randomseed(os.time())
+	require("useful")
+	require("chars")
 	gstate = require "gamestate"
 	game = require("game")
+	win = require("win")
+	dead = require("dead")
 	gstate.switch(game)
 end
 
@@ -33,7 +38,7 @@ function love.keypressed(key, uni)
 	gstate.keypressed(key, uni)
 end
 
-function keyreleased(key, uni)
+function love.keyreleased(key, uni)
 	gstate.keyreleased(key)
 end
 
