@@ -2,10 +2,25 @@ function love.load(arg)
 	math.randomseed(os.time())
 	require("useful")
 	require("chars")
+	screen = love.graphics.newCanvas(1024,1024)
 	gstate = require "gamestate"
 	game = require("game")
 	win = require("win")
 	dead = require("dead")
+	deathmusic = love.audio.newSource("audio/everyonedies.ogg")
+	music = {}
+	for i=1,5 do
+		music[i] = love.audio.newSource("audio/prep_Track 0"..i..".ogg")
+		music[i]:setLooping(true)
+	end
+	--music[1]:setVolume(0)
+	--music[2]:setVolume(0)
+	music[3]:setVolume(0)
+	--music[4]:setVolume(0)
+	--music[5]:setVolume(0)
+	for i,v in ipairs(music) do
+		v:play()
+	end
 	gstate.switch(game)
 end
 

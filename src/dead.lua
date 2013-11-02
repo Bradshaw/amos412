@@ -7,7 +7,10 @@ end
 
 
 function state:enter()
-	
+	for i,v in ipairs(music) do
+		v:stop()
+	end
+	deathmusic:play()
 end
 
 function state:focus()
