@@ -9,6 +9,7 @@ end
 
 
 function state:enter()
+	wrongs = 0
 	keys = {}
 	butts = {
 		"lctrl",
@@ -25,9 +26,13 @@ function state:enter()
 	wire = getNext()
 	setLights()
 	time = 0
-	countdown = 900
+	countdown = 600
 	vib = 0
 	glitch = 0
+	flux = 0
+	windowcont = math.random(1,#content)
+	vol = 0
+	vol2 = 0
 end
 
 function getNext()
@@ -112,6 +117,9 @@ function state:keypressed(key, uni)
 	if key=="d" then
 		gstate.switch(dead)
 	end
+	if key == "e" then
+		gstate.switch(win)
+	end
 end
 
 
@@ -125,6 +133,10 @@ function state:keyreleased(key, uni)
 				gstate.switch(win)
 			end
 		else
+			wrongs = wrongs + 1
+			if wrongs>=3 then
+				gstate.switch(dead)
+			end
 			goodness = "WRONG!"
 			countdown = countdown - 45
 			vib = 0.5
@@ -145,6 +157,29 @@ end
 
 
 function state:update(dt)
+	log.update(dt)
+
+	vol = math.min(1,vol+dt/3)
+	vol2 = math.min(1,vol2+dt/60)
+
+	music[1]:setVolume(vol2)
+	music[2]:setVolume(vol)
+	--music[3]:setVolume(0)
+	music[4]:setVolume(vol)
+	music[5]:setVolume(vol2)
+
+	flux = flux + dt
+	if flux>1 or vib>0 then
+		flux = -math.random()*3
+		logd = math.random()>0.5
+		if logd then
+			local ind = math.random(1,#messages)
+			messages.corrupt(ind)
+			log.add(messages[ind])
+		else
+			windowcont = math.random(1,#content)
+		end
+	end
 	if init and #butts>1 then
 		vib = math.max(0,vib-dt)
 		countdown = countdown - dt
@@ -162,8 +197,20 @@ function state:update(dt)
 	end
 	if math.random()>0.99 then
 		glitch = 1
+		log.corrupt()
 	end
 	glitch = math.max(glitch - dt*10, 0)
+	if vib>0 then
+		brutal:setPitch(vib*2+1)
+		setLights()
+		if brutal:isStopped() then
+			brutal:play()
+		end
+	else
+		if brutal:isPlaying() then
+			brutal:stop()
+		end
+	end
 end
 
 
@@ -254,19 +301,53 @@ function state:draw()
 				keys[k]=nil
 			end
 		end
+		love.graphics.setColor(255,255,255)
+		love.graphics.draw(wireim)
+		love.graphics.setColor(255,0,255)
 		for i,v in ipairs(lights) do
-			love.graphics.print(v,260+i*30,200)
+			love.graphics.setColor(25,25,25,127)
+			love.graphics.rectangle("fill",27+((-1+i)*110),320,80,80)
+			love.graphics.setColor(25,25,25,200)
+			love.graphics.rectangle("fill",27+((-1+i)*110)+3,323,74,74)
+
+			if i==1 then
+				love.graphics.setColor(88,58,32)
+			elseif i==2 then
+				love.graphics.setColor(12,22,108)
+			elseif i==3 then
+				love.graphics.setColor(175,11,11)
+			elseif i==4 then
+				love.graphics.setColor(29,88,16)
+			elseif i==5 then
+				love.graphics.setColor(92,13,86)
+			elseif i==6 then
+				love.graphics.setColor(214,169,7)
+			end
+			love.graphics.print(v,67+((-1+i)*110)-smalfnt:getWidth(v)/2,325)
+			if v==" " then
+				love.graphics.draw(cabOff,52+((-1+i)*110),415)
+			else
+				love.graphics.draw(cabOn,52+((-1+i)*110),415)
+			end
+
 		end
 		love.graphics.setColor(255,255,255)
 		--love.graphics.print(goodness,230,175)
 		--love.graphics.print(lastrel,230,235)
 		useful.drawTime(countdown)
 	--end
-	love.graphics.setColor(255,255,255)
-	love.graphics.draw(wireim)
+	love.graphics.setColor(255,25,25)
 	if vib>0 then
 		love.graphics.draw(useful.tri(math.floor(time*10)%2==0,skul1,skul2),512-skul1:getWidth()*(3/2),300-skul2:getHeight()*(3/2),0,3,3)
 	end
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(window,693,299)
+	if logd then
+		log.display(710,550)
+	else
+		love.graphics.draw(content[windowcont],693,299)
+	end
+
 	love.graphics.setCanvas()
 
 	love.graphics.setColor(10,25,30)
@@ -279,7 +360,7 @@ function state:draw()
 	love.graphics.setColor(255,0,0)
 	love.graphics.draw(screen,math.sin(countdown*90)*vib*10,math.sin(countdown*92)*vib*10)
 	love.graphics.setColor(0,255,0)
-	love.graphics.draw(screen,math.sin(countdown*92)*vib*10,math.sin(countdown*94)*vib*10-vib*100)
+	love.graphics.draw(screen,math.sin(countdown*92)*vib*10,math.sin(countdown*94)*vib*10-vib*10)
 	love.graphics.setColor(0,0,255)
 	love.graphics.draw(screen,math.sin(countdown*99)*vib*10+useful.tri(vib>0,-10,0),math.sin(countdown*97)*vib*10)
 	love.graphics.setColor(255,255,255,5)
