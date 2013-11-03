@@ -8,7 +8,7 @@ end
 
 function state:enter()
 	for i,v in ipairs(music) do
-		if i~=4 and i~=2 then
+		if i~=2 then
 			v:stop()
 		end
 	end

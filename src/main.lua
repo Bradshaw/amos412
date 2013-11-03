@@ -16,6 +16,11 @@ function love.load(arg)
 		table.insert(content,love.graphics.newImage("images/windowLContent"..cnt..".png"))
 		cnt = cnt+1
 	end
+	cnt = 1
+	while love.filesystem.exists("images/windowSContent"..cnt..".png") do
+		table.insert(content,love.graphics.newImage("images/windowSContent"..cnt..".png"))
+		cnt = cnt+1
+	end
 
 	smalfnt = love.graphics.newFont("images/smal.ttf",64)
 	tinyfnt = love.graphics.newFont("images/smal.ttf",16)
@@ -29,6 +34,7 @@ function love.load(arg)
 	dead = require("dead")
 	deathmusic = love.audio.newSource("audio/everyonedies.ogg")
 	brutal = love.audio.newSource("audio/Brutal2.ogg")
+	goodsnd = love.audio.newSource("audio/good.ogg")
 	brutal:setPitch(2)
 
 	skul1 = love.graphics.newImage("images/Gameover_Skull1.png")

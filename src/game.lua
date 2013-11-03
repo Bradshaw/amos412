@@ -26,7 +26,8 @@ function state:enter()
 	wire = getNext()
 	setLights()
 	time = 0
-	countdown = 600
+	totaltime = 600
+	countdown = totaltime
 	vib = 0
 	glitch = 0
 	flux = 0
@@ -128,6 +129,7 @@ function state:keyreleased(key, uni)
 	if useful.isIn(butts, key) then
 		if key==wire then
 			goodness = "GOOD!"
+			goodsnd:play()
 			if #butts==2 then
 				goodness = "You win!"
 				gstate.switch(win)
@@ -138,7 +140,7 @@ function state:keyreleased(key, uni)
 				gstate.switch(dead)
 			end
 			goodness = "WRONG!"
-			countdown = countdown - 45
+			countdown = countdown - 90
 			vib = 0.5
 			if #butts==2 then
 				goodness = "You deaded!"
@@ -158,14 +160,18 @@ end
 
 function state:update(dt)
 	log.update(dt)
+	if init and #butts<6 then
+		vol2 = math.min(0.5,vol2+dt/120)
+	end
 
-	vol = math.min(1,vol+dt/3)
-	vol2 = math.min(1,vol2+dt/60)
+	if init and #butts<5 then
+		vol = math.min(0.7,vol+dt/30)
+	end
 
 	music[1]:setVolume(vol2)
 	music[2]:setVolume(vol)
 	--music[3]:setVolume(0)
-	music[4]:setVolume(vol)
+	music[4]:setVolume(0.7)
 	music[5]:setVolume(vol2)
 
 	flux = flux + dt
@@ -174,7 +180,9 @@ function state:update(dt)
 		logd = math.random()>0.5
 		if logd then
 			local ind = math.random(1,#messages)
-			messages.corrupt(ind)
+			if init and #butts<6 then
+				messages.corrupt(ind)
+			end
 			log.add(messages[ind])
 		else
 			windowcont = math.random(1,#content)
@@ -197,7 +205,9 @@ function state:update(dt)
 	end
 	if math.random()>0.99 then
 		glitch = 1
-		log.corrupt()
+		if init then
+			log.corrupt()
+		end
 	end
 	glitch = math.max(glitch - dt*10, 0)
 	if vib>0 then
@@ -337,6 +347,7 @@ function state:draw()
 		useful.drawTime(countdown)
 	--end
 	love.graphics.setColor(255,25,25)
+	love.graphics.rectangle("fill",29,229,628*(countdown/totaltime),31)
 	if vib>0 then
 		love.graphics.draw(useful.tri(math.floor(time*10)%2==0,skul1,skul2),512-skul1:getWidth()*(3/2),300-skul2:getHeight()*(3/2),0,3,3)
 	end
@@ -363,7 +374,7 @@ function state:draw()
 	love.graphics.draw(screen,math.sin(countdown*92)*vib*10,math.sin(countdown*94)*vib*10-vib*10)
 	love.graphics.setColor(0,0,255)
 	love.graphics.draw(screen,math.sin(countdown*99)*vib*10+useful.tri(vib>0,-10,0),math.sin(countdown*97)*vib*10)
-	love.graphics.setColor(255,255,255,5)
+	love.graphics.setColor(255,255,255,10)
 	--love.graphics.setBlendMode("alpha")
 	love.graphics.draw(flexeffect,0,math.random(-3,3))
 end

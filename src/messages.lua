@@ -28,4 +28,5 @@ table.insert(messages, "How is there joy, as this world is always burning?")
 table.insert(messages, "Worn out is this body, a nest of diseases, dissolving.")
 table.insert(messages, "One truly is the protector of oneself.")
 table.insert(messages, "There are so few who see things as they truly are.")
+table.insert(messages, "All good things, come to an end. Bad things too...")
 
